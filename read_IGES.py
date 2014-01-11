@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 import os
+
 from iges.curves_surfaces import *  # never, ever do this
-from iges.entity import *   # or this
+# from iges.entity import *   # or this
+from iges.entity import Entity   # or this
 
 # http://ts.nist.gov/Standards/IGES/specfigures/index.cfm
 
 # Setup
-fileName = 'revB_alveolus_v5a_export.igs'
+#fileName = 'rim_bounded.igs'
+#fileName = 'rim_trimmed.igs'
+fileName = 'rim2.igs'
+#fileName = 'aa.igs'
+#fileName = 'car1_trimmed.igs'
+#fileName = 'car1.igs'
 #fileName = 'F126x.igs'
 
 # Load
@@ -22,6 +29,8 @@ first_global_line = True
 first_param_line = True
 global_string = ""
 pointer_dict = {}
+
+e_types = set()
 
 for line in f.readlines():
     data = line[:80]
@@ -45,11 +54,12 @@ for line in f.readlines():
     elif id_code == 'D':   # Directory entry
         if first_dict_line:
             entity_type_number = int(data[0:8].strip())
+            e_types.add(entity_type_number)
             # Curve and surface entities.  See IGES spec v5.3, p. 38, Table 3
             if entity_type_number == 100:   # Circular arc
                 e = Entity()
             elif entity_type_number == 102: # Composite curve
-                e = Entity()
+                e = CompositeCurveEntity()
             elif entity_type_number == 104: # Conic arc
                 e = Entity()
             elif entity_type_number == 108: # Plane
@@ -73,7 +83,15 @@ for line in f.readlines():
             elif entity_type_number == 126: # Rational B-spline curve
                 e = RationalBSplineCurve()
             elif entity_type_number == 128: # Rational B-spline surface
-                e = Entity()
+                e = RationalBSplineSurface()
+            elif entity_type_number == 141: # Boundary Entity
+                e = BoundaryEntity()
+            elif entity_type_number == 142: # Parametric Curve
+                e = ParametericCurveEntity()
+            elif entity_type_number == 143: # Bounded Surface
+                e = BoundedSurfaceEntity()
+            elif entity_type_number == 144: # Trimmed Surface
+                e = TrimmedSurfaceEntity()
             # Need to add more ...
             
             # CSG Entities. See IGES spec v5.3, p. 42, Section 3.3
@@ -132,14 +150,11 @@ for line in f.readlines():
         if param_string.strip()[-1] == record_sep:
             first_param_line = True
             param_string = param_string.strip()[:-1]
-            parameters = param_string.split(param_sep)
+            parameters = [s.replace("D","E").replace("d","e") for s in param_string.split(param_sep)]
             entity_list[pointer_dict[directory_pointer]].add_parameters(parameters)
 
     elif id_code == 'T':   # Terminate
         pass
+    
 f.close()
-
-for entity in entity_list:
-    if entity.d['entity_type_number'] == 126:
-        print entity
 
