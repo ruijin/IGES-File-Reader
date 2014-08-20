@@ -135,13 +135,17 @@ def degLower2Cubic(cpts):
 
     # get the first 3 control points by 3 times de Castljue
     start_points[0] = cpts[0]
-    start_points[1] = cpts[0] * 2/3 + cpts[1] * 1/3
-    start_points[2] = cpts[0] * 4/9 + cpts[1] * 4/9 + cpts[2] * 1/9
+    start_points[1] = cpts[0] * (9-deg)/9 + cpts[1] * deg/9
+    start_points[2] = cpts[0] * (54-13*deg + deg*deg)/54 + \
+                      cpts[1] * (7*deg - deg*deg)/27 + \
+                      cpts[2] * (deg*deg-deg)/54
     
     # get the last 3 control points
     start_points[9] = cpts[-1]
-    start_points[8] = cpts[-1] * 2/3 + cpts[-2] * 1/3
-    start_points[7] = cpts[-1] * 4/9 + cpts[-2] * 4/9 + cpts[-3] * 1/9
+    start_points[8] = cpts[-1] * (9-deg)/9 + cpts[-2] * deg/9
+    start_points[7] = cpts[-1] * (54-13*deg + deg*deg)/54 + \
+                      cpts[-2] * (7*deg - deg*deg)/27 + \
+                      cpts[-3] * (deg*deg-deg)/54
 
     # calculate the middle 4 points
     start_points[3] = 1/3 * start_points[7] + 7/6 * start_points[2] - 1/6 * start_points[8] - 1/3 * start_points[1]

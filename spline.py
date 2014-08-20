@@ -7,21 +7,20 @@ def knot_insert(knots, coeffs, d, new_knot):
     """
 
     j = next( (idx for idx,knot in enumerate(knots) if knot > new_knot), len(knots))
-    # print(j)
+    #print(j)
 
     new_coeff = []
 
     for i in range(j-d + 1):
-        # print(i, knots[i:i+d])
+        #print(i, knots[i:i+d])
         new_coeff.append(coeffs[i])
 
     for i in range(j - d, j):
         t = (new_knot - knots[i])/(knots[i+d] - knots[i])
-        # print(i, knots[i:i+d], knots[i+1:i+d+1], t)
         new_coeff.append(coeffs[i]*(1-t) + coeffs[i+1]*t)
 
     for i in range(j, len(knots) - d + 1):
-        # print(i, knots[i:i+d])
+        #print(i, knots[i:i+d])
         new_coeff.append(coeffs[i])
         
 
@@ -55,8 +54,11 @@ def nurbs2bezier(knots, coeffs, d):
     
 
 if __name__ == '__main__':
-    knots = [0,0,0,1,2,3,4,4,4]
-    coeff = [1,2,3,4,5,6,7]
+    #knots = [-4, -4, -4, -3,-2,-1,0,1,2,3, 4, 4, 4]
+    #coeff = [0,0, 0, 0,36,0,0,0,0]
+    
+    knots = [-1, -1, -1, 0, 1,2,3,4 , 5,5,5]
+    coeff = [0,0,0, 0, 6,0,0,0 , 0]
 
     print(nurbs2bezier(knots, coeff, 3))
     
